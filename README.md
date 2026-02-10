@@ -63,55 +63,83 @@ Create an `index.html` next to your `schemas/` folder. Pick one of the setup opt
 
 ### Option A: CDN (recommended — zero install)
 
-No dependencies, no `node_modules`. Just an HTML file:
+No dependencies, no `node_modules`. Just 1 HTML file + your schema files.
 
-```html
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Database Schema</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/style.css">
-</head>
-<body>
-  <div id="schema-viewer"></div>
-  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/fsv.umd.js"></script>
-  <script>
-    FirestoreSchemaViewer.render('#schema-viewer', {
-      title: 'My Project',
-      schemasDir: './schemas/'
-    })
-  </script>
-</body>
-</html>
-```
+**Step by step:**
 
-Then serve it:
+1. Create a folder for your docs (e.g. `docs/firestore/`):
+   ```
+   your-project/
+   └── docs/firestore/
+       ├── index.html
+       └── schemas/
+           ├── users.schema.json
+           └── users/
+               └── orders.schema.json
+   ```
 
-```bash
-npx serve .
-```
+2. Create `index.html`:
+   ```html
+   <!DOCTYPE html>
+   <html lang="en" class="dark">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>My Project - Firestore Schemas</title>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/style.css">
+   </head>
+   <body>
+     <div id="schema-viewer"></div>
+     <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/fsv.umd.js"></script>
+     <script>
+       FirestoreSchemaViewer.render('#schema-viewer', {
+         title: 'My Project',
+         schemasDir: './schemas/'
+       })
+     </script>
+   </body>
+   </html>
+   ```
 
-That's it. The viewer **auto-discovers** all `.schema.json` files in the `schemas/` folder (including subdirectories). No need to list them manually.
+3. Add your `.schema.json` files to `schemas/` and serve:
+   ```bash
+   cd docs/firestore
+   npx serve .
+   # Open http://localhost:3000
+   ```
+
+That's it. The viewer **auto-discovers** all `.schema.json` files in the `schemas/` folder (including subdirectories). Add new schemas, refresh the browser — no need to touch `index.html`.
 
 > **How it works:** When served with `npx serve`, `python3 -m http.server`, or any server with directory listing enabled, the viewer parses the directory listing to find all schema files automatically. If your server doesn't support directory listing (GitHub Pages, Netlify, Vercel), create a `schemas/index.json` manifest — see [Hosting without directory listing](#hosting-without-directory-listing) below.
 
 ### Option B: Static files via npm (no dependency tree)
 
-Install the dist-only package (3 files, ~725 KB, zero dependencies):
+Install the dist-only package (3 files, ~307 KB JS + ~24 KB CSS, zero dependencies):
 
 ```bash
 npm install firestore-schema-viewer-dist
 ```
 
-Then reference the files in your HTML:
+**Step by step:**
 
-```html
-<link rel="stylesheet" href="./node_modules/firestore-schema-viewer-dist/style.css">
-<script src="./node_modules/firestore-schema-viewer-dist/fsv.umd.js"></script>
-```
+1. Create your docs folder and copy the files:
+   ```bash
+   mkdir -p docs/firestore/schemas
+   cp node_modules/firestore-schema-viewer-dist/fsv.umd.js docs/firestore/
+   cp node_modules/firestore-schema-viewer-dist/style.css docs/firestore/
+   cp node_modules/firestore-schema-viewer-dist/index.html docs/firestore/
+   ```
+
+2. Edit `docs/firestore/index.html` — update the `title` and you're done. The default template already uses `schemasDir: './schemas/'`.
+
+3. Add your `.schema.json` files to `docs/firestore/schemas/` and serve:
+   ```bash
+   cd docs/firestore
+   npx serve .
+   ```
 
 ### Option C: Full package (for bundler projects)
 
@@ -132,6 +160,8 @@ render('#schema-viewer', {
 ```
 
 ---
+
+> **Quick reference:** See [QUICKSHEET.md](./QUICKSHEET.md) for a condensed cheatsheet with schema templates, field patterns, and common recipes.
 
 ## Hosting without directory listing
 
@@ -205,7 +235,7 @@ You never write Firestore paths manually. They're inferred from the file locatio
 
 ## Roadmap
 
-- **v0.2** (current): Static viewer, dark theme, CDN support, process.env fix
+- **v0.3** (current): Static viewer, dark theme, CDN support, auto-discovery
 - **Future** (based on demand): CLI tool, hot reload, schema validation, light theme, CI/CD integration
 
 Want a feature? [Open an issue](https://github.com/juanisidoro/firestore-schema-viewer/issues).

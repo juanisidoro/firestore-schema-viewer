@@ -82,13 +82,20 @@ function normalizeDir(url: string): string {
  * Auto-discover .schema.json files by parsing directory listing HTML.
  * Works with: npx serve, python http.server, http-server, Apache/nginx autoindex.
  * Returns relative paths like "users.schema.json", "users/orders.schema.json".
- * Uses link textContent for cross-platform reliability (serve on Windows uses backslashes in href).
+ *
+ * Only reads links inside <li> elements (the file list), skipping breadcrumb/navigation
+ * links in headers that would cause false 404s on recursion.
  */
 async function discoverFromDirectoryListing(
   dirUrl: string,
   basePath: string = ''
 ): Promise<string[]> {
-  const res = await fetch(dirUrl)
+  let res: Response
+  try {
+    res = await fetch(dirUrl)
+  } catch {
+    return []
+  }
   if (!res.ok) return []
 
   const contentType = res.headers.get('content-type') || ''
@@ -97,13 +104,14 @@ async function discoverFromDirectoryListing(
 
   if (contentType.includes('text/html')) {
     const doc = new DOMParser().parseFromString(text, 'text/html')
-    const links = Array.from(doc.querySelectorAll('a'))
+    // Only select links inside <li> — this targets the file list and skips
+    // breadcrumb links in <header>/<h1> that cause false directory recursion
+    const links = Array.from(doc.querySelectorAll('li a'))
 
     const schemaFiles: string[] = []
     const subdirs: string[] = []
 
     for (const link of links) {
-      // Use textContent — reliable across platforms (serve on Windows puts backslashes in href)
       const name = (link.textContent || '').trim()
       if (!name || name === '..' || name === '../') continue
 
