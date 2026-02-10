@@ -1,6 +1,6 @@
 {
   "name": "firestore-schema-viewer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "FireSchema — Interactive schema viewer for Firestore databases. Like SwaggerUI, but for NoSQL.",
   "type": "module",
   "main": "dist/fsv.umd.js",

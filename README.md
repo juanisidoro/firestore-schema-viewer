@@ -110,36 +110,67 @@ No dependencies, no `node_modules`. Just 1 HTML file + your schema files.
    npx serve .
    # Open http://localhost:3000
    ```
+   Custom port: `npx serve . -l 8080`
 
 That's it. The viewer **auto-discovers** all `.schema.json` files in the `schemas/` folder (including subdirectories). Add new schemas, refresh the browser — no need to touch `index.html`.
 
 > **How it works:** When served with `npx serve`, `python3 -m http.server`, or any server with directory listing enabled, the viewer parses the directory listing to find all schema files automatically. If your server doesn't support directory listing (GitHub Pages, Netlify, Vercel), create a `schemas/index.json` manifest — see [Hosting without directory listing](#hosting-without-directory-listing) below.
 
+> **Full quicksheet:** [QUICKSHEET-CDN.md](./QUICKSHEET-CDN.md) — schema templates, field patterns, checklist.
+
 ### Option B: Static files via npm (no dependency tree)
 
-Install the dist-only package (3 files, ~307 KB JS + ~24 KB CSS, zero dependencies):
+Install the dist-only package — **1 package, ~335 KB total, zero sub-dependencies**:
 
 ```bash
-npm install firestore-schema-viewer-dist
+npm install --save-dev firestore-schema-viewer-dist
 ```
 
 **Step by step:**
 
-1. Create your docs folder and copy the files:
+1. Create your docs folder and install:
    ```bash
-   mkdir -p docs/firestore/schemas
-   cp node_modules/firestore-schema-viewer-dist/fsv.umd.js docs/firestore/
-   cp node_modules/firestore-schema-viewer-dist/style.css docs/firestore/
-   cp node_modules/firestore-schema-viewer-dist/index.html docs/firestore/
+   mkdir -p docs/database/firebase/schemas
+   cd docs/database/firebase
+   npm init -y
+   npm install --save-dev firestore-schema-viewer-dist
+   echo "node_modules/" > .gitignore
    ```
 
-2. Edit `docs/firestore/index.html` — update the `title` and you're done. The default template already uses `schemasDir: './schemas/'`.
+2. Create `index.html`:
+   ```html
+   <!DOCTYPE html>
+   <html lang="en" class="dark">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>My Project - Firestore Schemas</title>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="./node_modules/firestore-schema-viewer-dist/style.css">
+   </head>
+   <body>
+     <div id="schema-viewer"></div>
+     <script src="./node_modules/firestore-schema-viewer-dist/fsv.umd.js"></script>
+     <script>
+       FirestoreSchemaViewer.render('#schema-viewer', {
+         title: 'My Project',
+         schemasDir: './schemas/'
+       })
+     </script>
+   </body>
+   </html>
+   ```
 
-3. Add your `.schema.json` files to `docs/firestore/schemas/` and serve:
+3. Add your `.schema.json` files to `schemas/` and serve:
    ```bash
-   cd docs/firestore
    npx serve .
+   # Open http://localhost:3000
    ```
+   Custom port: `npx serve . -l 8080`
+
+> **Full quicksheet:** [QUICKSHEET-NPM-DIST.md](./QUICKSHEET-NPM-DIST.md) — complete setup, schema templates, field patterns, checklist.
 
 ### Option C: Full package (for bundler projects)
 
@@ -159,9 +190,9 @@ render('#schema-viewer', {
 })
 ```
 
----
+> **Full quicksheet:** [QUICKSHEET-BUNDLER.md](./QUICKSHEET-BUNDLER.md) — complete setup for bundler projects, schema templates, field patterns.
 
-> **Quick reference:** See [QUICKSHEET.md](./QUICKSHEET.md) for a condensed cheatsheet with schema templates, field patterns, and common recipes.
+---
 
 ## Hosting without directory listing
 
@@ -217,6 +248,24 @@ You never write Firestore paths manually. They're inferred from the file locatio
 | `config.schemasDir` | `string` (recommended) | Path to schemas folder — auto-discovers all `.schema.json` files |
 | `config.schemas` | `string[]` or `object[]` | Explicit URLs to `.schema.json` files, or inline collection objects |
 
+Use **one** of `schemasDir` or `schemas`:
+
+```js
+// Option 1: Auto-discovery (recommended) — finds all .schema.json files automatically
+FirestoreSchemaViewer.render('#viewer', {
+  schemasDir: './schemas/'
+})
+
+// Option 2: Explicit list — useful if you need to control which schemas are loaded
+FirestoreSchemaViewer.render('#viewer', {
+  schemas: [
+    './schemas/users.schema.json',
+    './schemas/users/orders.schema.json',
+    './schemas/products.schema.json'
+  ]
+})
+```
+
 ## What You See
 
 - **Sidebar** — navigable tree of all collections and subcollections
@@ -232,6 +281,53 @@ You never write Firestore paths manually. They're inferred from the file locatio
 |---|---|---|
 | [`firestore-schema-viewer`](https://www.npmjs.com/package/firestore-schema-viewer) | Full library (UMD + ES + CSS + source) | React, Radix, etc. |
 | [`firestore-schema-viewer-dist`](https://www.npmjs.com/package/firestore-schema-viewer-dist) | Static files only (UMD + CSS) | **None** |
+
+## Generate Schemas with AI
+
+Use this prompt with **Claude Code**, **ChatGPT**, **Copilot**, or any LLM to auto-generate your schema files. Copy the prompt below and adapt the collection list to your project:
+
+<details>
+<summary><strong>Prompt: Generate FireSchema files</strong> (click to expand)</summary>
+
+```
+Generate Firestore schema files for the FireSchema viewer (https://github.com/juanisidoro/firestore-schema-viewer).
+
+Rules:
+- One .schema.json file per collection
+- Folder structure mirrors Firestore hierarchy: subcollections go inside a folder named after the parent collection
+- If a subcollection exists, the parent .schema.json MUST also exist
+- Every field must have "type" and "description"
+- Use standard JSON Schema features: type, enum, format, required, minimum, maximum, etc.
+- Use "format": "date-time" for timestamps, "format": "email" for emails, "format": "uri" for URLs
+- Do NOT include "path" or "subcollections" fields — they are inferred from folder structure
+
+Each file must follow this format:
+{
+  "$schema": "https://raw.githubusercontent.com/juanisidoro/firestore-schema-viewer/main/schema/collection.schema.json",
+  "collection": "<collection-name>",
+  "description": "<what this collection stores>",
+  "schema": {
+    "type": "object",
+    "required": [...],
+    "properties": { ... }
+  }
+}
+
+Generate the schema files for the following collections:
+
+- users (email, displayName, role: admin/editor/viewer, createdAt)
+- users/orders (total, status: pending/paid/shipped, items array, createdAt)
+- products (name, price, category, inStock boolean)
+
+Output each file with its path (e.g. schemas/users.schema.json) so I can create them directly.
+
+After generating the files, follow the setup instructions at:
+https://github.com/juanisidoro/firestore-schema-viewer#setup-options
+```
+
+</details>
+
+Replace the collections list at the bottom with your own. The LLM will generate ready-to-use `.schema.json` files with the correct format and folder structure.
 
 ## Roadmap
 
