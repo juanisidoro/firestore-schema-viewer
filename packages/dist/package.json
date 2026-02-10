@@ -1,0 +1,18 @@
+{
+  "name": "firestore-schema-viewer-dist",
+  "version": "0.1.1",
+  "description": "FireSchema static files only — zero dependencies. Drop-in viewer for Firestore database schemas.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanisidoro/firestore-schema-viewer.git"
+  },
+  "homepage": "https://github.com/juanisidoro/firestore-schema-viewer",
+  "keywords": ["firestore", "firebase", "json-schema", "schema-viewer", "documentation", "nosql", "static"],
+  "files": [
+    "fsv.umd.js",
+    "style.css",
+    "index.html",
+    "README.md"
+  ]
+}

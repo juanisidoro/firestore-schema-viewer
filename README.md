@@ -16,13 +16,7 @@ Document your Firestore database structure using [JSON Schema](https://json-sche
 
 ## Quick Start
 
-### 1. Install
-
-```bash
-npm install firestore-schema-viewer
-```
-
-### 2. Create your schema files
+### 1. Create your schema files
 
 Create a `schemas/` folder in your project. Each `.schema.json` file represents one Firestore collection:
 
@@ -60,9 +54,17 @@ Example `schemas/users.schema.json`:
 
 > **Tip:** The `$schema` line at the top gives you autocomplete and validation in VS Code.
 
-### 3. Create a viewer page
+### 2. Create the viewer page
 
-Create an `index.html` anywhere in your project:
+Create an `index.html` next to your `schemas/` folder. Pick one of the setup options below:
+
+---
+
+## Setup Options
+
+### Option A: CDN (recommended — zero install)
+
+No dependencies, no `node_modules`. Just an HTML file:
 
 ```html
 <!DOCTYPE html>
@@ -72,17 +74,16 @@ Create an `index.html` anywhere in your project:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Database Schema</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./node_modules/firestore-schema-viewer/dist/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.1/style.css">
 </head>
 <body>
   <div id="schema-viewer"></div>
-  <script src="./node_modules/firestore-schema-viewer/dist/fsv.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.1/fsv.umd.js"></script>
   <script>
     FirestoreSchemaViewer.render('#schema-viewer', {
       title: 'My Project',
       schemas: [
         './schemas/users.schema.json',
-        './schemas/users/orders.schema.json',
         './schemas/products.schema.json'
       ]
     })
@@ -97,7 +98,43 @@ Then serve it:
 npx serve .
 ```
 
-That's it. Open the URL and you'll see your full database documentation.
+### Option B: Static files via npm (no dependency tree)
+
+Install the dist-only package (3 files, ~725 KB, zero dependencies):
+
+```bash
+npm install firestore-schema-viewer-dist
+```
+
+Then reference the files in your HTML:
+
+```html
+<link rel="stylesheet" href="./node_modules/firestore-schema-viewer-dist/style.css">
+<script src="./node_modules/firestore-schema-viewer-dist/fsv.umd.js"></script>
+```
+
+### Option C: Full package (for bundler projects)
+
+If your project uses a bundler (Vite, Webpack, etc.):
+
+```bash
+npm install firestore-schema-viewer
+```
+
+```js
+import { render } from 'firestore-schema-viewer'
+import 'firestore-schema-viewer/dist/style.css'
+
+render('#schema-viewer', {
+  title: 'My App',
+  schemas: [
+    './schemas/users.schema.json',
+    './schemas/products.schema.json'
+  ]
+})
+```
+
+---
 
 ## Schema File Format
 
@@ -122,32 +159,6 @@ You never write Firestore paths manually. They're inferred from the file locatio
 | `users/orders.schema.json` | `/users/{userId}/orders/{orderId}` |
 | `frontend-shops/products.schema.json` | `/frontend-shops/{frontend_shopId}/products/{productId}` |
 
-## Usage with a Bundler
-
-If your project uses a bundler (Vite, Webpack, etc.):
-
-```js
-import { render } from 'firestore-schema-viewer'
-import 'firestore-schema-viewer/dist/style.css'
-
-render('#schema-viewer', {
-  title: 'My App',
-  schemas: [
-    './schemas/users.schema.json',
-    './schemas/products.schema.json'
-  ]
-})
-```
-
-## Usage with CDN
-
-No install needed — reference directly from jsDelivr:
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/juanisidoro/firestore-schema-viewer/dist/style.css">
-<script src="https://cdn.jsdelivr.net/gh/juanisidoro/firestore-schema-viewer/dist/fsv.umd.js"></script>
-```
-
 ## API
 
 ### `FirestoreSchemaViewer.render(selector, config)`
@@ -167,9 +178,16 @@ No install needed — reference directly from jsDelivr:
 - **Example generator** — auto-generated example documents from the schema
 - **Copy buttons** — one-click copy for paths, empty objects, and examples
 
+## Packages
+
+| Package | What it includes | Dependencies |
+|---|---|---|
+| [`firestore-schema-viewer`](https://www.npmjs.com/package/firestore-schema-viewer) | Full library (UMD + ES + CSS + source) | React, Radix, etc. |
+| [`firestore-schema-viewer-dist`](https://www.npmjs.com/package/firestore-schema-viewer-dist) | Static files only (UMD + CSS) | **None** |
+
 ## Roadmap
 
-- **v1.0** (current): Static viewer, dark theme, CDN support
+- **v0.1** (current): Static viewer, dark theme, CDN support
 - **Future** (based on demand): CLI tool, hot reload, schema validation, light theme, CI/CD integration
 
 Want a feature? [Open an issue](https://github.com/juanisidoro/firestore-schema-viewer/issues).
