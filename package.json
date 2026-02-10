@@ -8,6 +8,11 @@
   "files": ["dist/", "schema/", "README.md", "LICENSE"],
   "keywords": ["firestore", "firebase", "json-schema", "schema-viewer", "documentation", "nosql"],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanisidoro/firestore-schema-viewer.git"
+  },
+  "homepage": "https://github.com/juanisidoro/firestore-schema-viewer",
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
