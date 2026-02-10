@@ -336,6 +336,10 @@ Replace the collections list at the bottom with your own. The LLM will generate 
 
 Want a feature? [Open an issue](https://github.com/juanisidoro/firestore-schema-viewer/issues).
 
+## Acknowledgements
+
+This project was built with the assistance of [Claude](https://claude.ai) by Anthropic.
+
 ## License
 
 MIT
