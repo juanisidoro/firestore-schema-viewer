@@ -73,6 +73,111 @@ function buildCollectionTree(
   return collections
 }
 
+/** Ensure dirUrl ends with "/" */
+function normalizeDir(url: string): string {
+  return url.endsWith('/') ? url : url + '/'
+}
+
+/**
+ * Auto-discover .schema.json files by parsing directory listing HTML.
+ * Works with: npx serve, python http.server, http-server, Apache/nginx autoindex.
+ * Returns relative paths like "users.schema.json", "users/orders.schema.json".
+ * Uses link textContent for cross-platform reliability (serve on Windows uses backslashes in href).
+ */
+async function discoverFromDirectoryListing(
+  dirUrl: string,
+  basePath: string = ''
+): Promise<string[]> {
+  const res = await fetch(dirUrl)
+  if (!res.ok) return []
+
+  const contentType = res.headers.get('content-type') || ''
+  const text = await res.text()
+  const discovered: string[] = []
+
+  if (contentType.includes('text/html')) {
+    const doc = new DOMParser().parseFromString(text, 'text/html')
+    const links = Array.from(doc.querySelectorAll('a'))
+
+    const schemaFiles: string[] = []
+    const subdirs: string[] = []
+
+    for (const link of links) {
+      // Use textContent — reliable across platforms (serve on Windows puts backslashes in href)
+      const name = (link.textContent || '').trim()
+      if (!name || name === '..' || name === '../') continue
+
+      if (name.endsWith('.schema.json')) {
+        schemaFiles.push(basePath + name)
+      } else if (name.endsWith('/') || link.classList.contains('folder')) {
+        const dirName = name.endsWith('/') ? name : name + '/'
+        subdirs.push(dirName)
+      }
+    }
+
+    discovered.push(...schemaFiles)
+
+    // Recurse into subdirectories
+    const subResults = await Promise.all(
+      subdirs.map(sub => discoverFromDirectoryListing(dirUrl + sub, basePath + sub))
+    )
+    for (const paths of subResults) {
+      discovered.push(...paths)
+    }
+  }
+
+  return discovered
+}
+
+/**
+ * Load schema paths from a directory using a 3-step fallback strategy:
+ * 1. Auto-discover by parsing directory listing (works with npx serve, python http.server, etc.)
+ * 2. Fall back to index.json manifest in the directory
+ * 3. Throw error if both fail
+ */
+export async function loadSchemasFromDir(
+  dirUrl: string
+): Promise<FirebaseCollection[]> {
+  const dir = normalizeDir(dirUrl)
+
+  // Step 1: Try auto-discovery via directory listing
+  let schemaPaths = await discoverFromDirectoryListing(dir)
+
+  // Step 2: Fall back to index.json manifest
+  if (schemaPaths.length === 0) {
+    try {
+      const res = await fetch(dir + 'index.json')
+      if (res.ok) {
+        const manifest = await res.json()
+        if (Array.isArray(manifest)) {
+          schemaPaths = manifest as string[]
+          console.info('[FSV] Loaded schema list from index.json')
+        }
+      }
+    } catch {
+      // index.json not found or invalid
+    }
+  } else {
+    console.info(`[FSV] Auto-discovered ${schemaPaths.length} schema(s) from directory listing`)
+  }
+
+  if (schemaPaths.length === 0) {
+    console.warn('[FSV] No schemas found. Ensure your schemas/ folder contains .schema.json files and your server supports directory listing, or create a schemas/index.json manifest.')
+    return []
+  }
+
+  // Fetch all discovered schemas
+  const files = await Promise.all(
+    schemaPaths.map(async (relativePath) => {
+      const url = dir + relativePath
+      const content = await fetch(url).then((r) => r.json()) as SchemaFile
+      return { path: relativePath, content }
+    })
+  )
+
+  return buildCollectionTree(files)
+}
+
 function isSchemaFileArray(input: unknown[]): input is SchemaFile[] {
   return typeof input[0] === 'object' && input[0] !== null && 'schema' in (input[0] as Record<string, unknown>) && 'collection' in (input[0] as Record<string, unknown>)
 }

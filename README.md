@@ -73,18 +73,15 @@ No dependencies, no `node_modules`. Just an HTML file:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Database Schema</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/style.css">
 </head>
 <body>
   <div id="schema-viewer"></div>
-  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/fsv.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/fsv.umd.js"></script>
   <script>
     FirestoreSchemaViewer.render('#schema-viewer', {
       title: 'My Project',
-      schemas: [
-        './schemas/users.schema.json',
-        './schemas/products.schema.json'
-      ]
+      schemasDir: './schemas/'
     })
   </script>
 </body>
@@ -96,6 +93,10 @@ Then serve it:
 ```bash
 npx serve .
 ```
+
+That's it. The viewer **auto-discovers** all `.schema.json` files in the `schemas/` folder (including subdirectories). No need to list them manually.
+
+> **How it works:** When served with `npx serve`, `python3 -m http.server`, or any server with directory listing enabled, the viewer parses the directory listing to find all schema files automatically. If your server doesn't support directory listing (GitHub Pages, Netlify, Vercel), create a `schemas/index.json` manifest — see [Hosting without directory listing](#hosting-without-directory-listing) below.
 
 ### Option B: Static files via npm (no dependency tree)
 
@@ -126,14 +127,31 @@ import 'firestore-schema-viewer/dist/style.css'
 
 render('#schema-viewer', {
   title: 'My App',
-  schemas: [
-    './schemas/users.schema.json',
-    './schemas/products.schema.json'
-  ]
+  schemasDir: './schemas/'
 })
 ```
 
 ---
+
+## Hosting without directory listing
+
+If your server doesn't support directory listing (GitHub Pages, Netlify, Vercel), create a `schemas/index.json` file listing all your schema paths:
+
+```json
+[
+  "users.schema.json",
+  "users/orders.schema.json",
+  "products.schema.json"
+]
+```
+
+Generate it automatically:
+
+```bash
+find schemas -name "*.schema.json" | sed 's|^schemas/||' | sort > schemas/index.json
+```
+
+The viewer will automatically look for this file if directory listing is not available.
 
 ## Schema File Format
 
@@ -166,7 +184,8 @@ You never write Firestore paths manually. They're inferred from the file locatio
 |---|---|---|
 | `selector` | `string` | CSS selector for the container element |
 | `config.title` | `string` (optional) | Title shown in the sidebar header |
-| `config.schemas` | `string[]` or `object[]` | URLs to `.schema.json` files, or inline collection objects |
+| `config.schemasDir` | `string` (recommended) | Path to schemas folder — auto-discovers all `.schema.json` files |
+| `config.schemas` | `string[]` or `object[]` | Explicit URLs to `.schema.json` files, or inline collection objects |
 
 ## What You See
 

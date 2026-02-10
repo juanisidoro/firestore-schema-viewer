@@ -18,18 +18,15 @@ Create `index.html`:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firestore Schemas</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/style.css">
 </head>
 <body>
   <div id="schema-viewer"></div>
-  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/fsv.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.3/fsv.umd.js"></script>
   <script>
     FirestoreSchemaViewer.render('#schema-viewer', {
       title: 'My Project',
-      schemas: [
-        // Add your schema paths here:
-        './schemas/users.schema.json'
-      ]
+      schemasDir: './schemas/'
     })
   </script>
 </body>
