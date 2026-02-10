@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import type { FirebaseCollection } from "@/lib/schema-types"
 import {
-  Database,
   Search,
   ChevronRight,
   ChevronDown,
@@ -11,6 +10,22 @@ import {
   FileJson2,
   Layers,
 } from "lucide-react"
+
+function FireSchemaLogo({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" className={className}>
+      <path d="M16 2C16 2 10 8 10 14c0 2.5 1.2 4.7 3 6.2C12.4 18.5 12 16.8 12 15c0-3 4-7 4-7s4 4 4 7c0 1.8-.4 3.5-1 5.2 1.8-1.5 3-3.7 3-6.2C22 8 16 2 16 2z" fill="url(#fsv-grad)" />
+      <text x="7" y="27" fontFamily="monospace" fontWeight="700" fontSize="11" fill="#f5f5f5" opacity="0.95">{"{"}</text>
+      <text x="21" y="27" fontFamily="monospace" fontWeight="700" fontSize="11" fill="#f5f5f5" opacity="0.95">{"}"}</text>
+      <defs>
+        <linearGradient id="fsv-grad" x1="16" y1="2" x2="16" y2="22" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#ef4444" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -103,7 +118,7 @@ export function CollectionSidebar({
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-border px-4 py-4">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
-          <Database className="h-4.5 w-4.5 text-primary" />
+          <FireSchemaLogo className="h-6 w-6" />
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-foreground tracking-tight">

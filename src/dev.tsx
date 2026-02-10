@@ -1,7 +1,7 @@
 import { render } from './entry'
 
 render('#schema-viewer', {
-  title: 'My E-Commerce',
+  title: 'FireSchema',
   schemas: [
     '/example/schemas/frontend-shops.schema.json',
     '/example/schemas/frontend-shops/products.schema.json',
