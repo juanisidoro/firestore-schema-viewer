@@ -64,8 +64,8 @@ Then serve with `npx serve .`
 ## CDN (no install needed)
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.1.1/style.css">
-<script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.1.1/fsv.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/style.css">
+<script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/fsv.umd.js"></script>
 ```
 
 ## Full documentation

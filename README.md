@@ -37,7 +37,6 @@ Example `schemas/users.schema.json`:
   "$schema": "https://raw.githubusercontent.com/juanisidoro/firestore-schema-viewer/main/schema/collection.schema.json",
   "collection": "users",
   "description": "Application users",
-  "documentCount": 1500,
   "schema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
@@ -74,11 +73,11 @@ No dependencies, no `node_modules`. Just an HTML file:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Database Schema</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.1/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/style.css">
 </head>
 <body>
   <div id="schema-viewer"></div>
-  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.1/fsv.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/firestore-schema-viewer-dist@0.2/fsv.umd.js"></script>
   <script>
     FirestoreSchemaViewer.render('#schema-viewer', {
       title: 'My Project',
@@ -145,7 +144,7 @@ Each `.schema.json` file has this structure:
 | `collection` | Yes | Collection name (e.g. `"users"`) |
 | `schema` | Yes | Standard [JSON Schema](https://json-schema.org/draft/2020-12/schema) object |
 | `description` | No | What this collection stores |
-| `documentCount` | No | Approximate number of documents |
+| `documentCount` | No | Approximate number of documents (hidden in UI if omitted) |
 
 The `schema` field is plain **JSON Schema draft 2020-12**. You can use all standard features: `type`, `properties`, `required`, `enum`, `format`, `pattern`, `minimum`, `maximum`, nested `object` and `array` types, etc.
 
@@ -187,7 +186,7 @@ You never write Firestore paths manually. They're inferred from the file locatio
 
 ## Roadmap
 
-- **v0.1** (current): Static viewer, dark theme, CDN support
+- **v0.2** (current): Static viewer, dark theme, CDN support, process.env fix
 - **Future** (based on demand): CLI tool, hot reload, schema validation, light theme, CI/CD integration
 
 Want a feature? [Open an issue](https://github.com/juanisidoro/firestore-schema-viewer/issues).

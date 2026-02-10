@@ -60,17 +60,19 @@ export function SchemaStats({ collections }: SchemaStatsProps) {
       color: "text-emerald-400",
       bg: "bg-emerald-400/10",
     },
-    {
+    ...(documents > 0 ? [{
       label: "Documents",
       value: documents.toLocaleString(),
       icon: Layers,
       color: "text-amber-400",
       bg: "bg-amber-400/10",
-    },
+    }] : []),
   ]
 
+  const gridCols = stats.length === 4 ? "grid-cols-4" : "grid-cols-3"
+
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className={`grid ${gridCols} gap-3`}>
       {stats.map((stat) => (
         <div
           key={stat.label}

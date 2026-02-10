@@ -1,6 +1,6 @@
 {
   "name": "firestore-schema-viewer-dist",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "FireSchema static files only — zero dependencies. Drop-in viewer for Firestore database schemas.",
   "license": "MIT",
   "repository": {
