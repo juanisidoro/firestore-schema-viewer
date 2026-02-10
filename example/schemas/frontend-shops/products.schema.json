@@ -1,0 +1,144 @@
+{
+  "$schema": "https://raw.githubusercontent.com/juanisidoro/firestore-schema-viewer/main/schema/collection.schema.json",
+  "collection": "products",
+  "description": "WooCommerce products synced to Firestore. Contains full product data including pricing, stock, categories, images, and metadata.",
+  "documentCount": 3421,
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "firestore://frontend_shops/products",
+    "title": "Product",
+    "description": "A WooCommerce product synced from the store, including all pricing, inventory, and content data.",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "WooCommerce product ID"
+      },
+      "name": {
+        "type": "string",
+        "description": "Product display name",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "slug": {
+        "type": "string",
+        "description": "URL-friendly product slug",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:__trashed)?$"
+      },
+      "permalink": {
+        "type": "string",
+        "description": "Full URL to the product on the WooCommerce store",
+        "format": "uri"
+      },
+      "type": {
+        "type": "string",
+        "description": "WooCommerce product type",
+        "enum": ["simple", "variable", "grouped", "external"]
+      },
+      "status": {
+        "type": "string",
+        "description": "Publication status of the product",
+        "enum": ["publish", "draft", "pending", "private", "trash"]
+      },
+      "sku": {
+        "type": "string",
+        "description": "Stock Keeping Unit identifier"
+      },
+      "description": {
+        "type": "string",
+        "description": "Full product description (may contain HTML)"
+      },
+      "short_description": {
+        "type": "string",
+        "description": "Short product summary (may contain HTML)"
+      },
+      "price": {
+        "type": "string",
+        "description": "Current active price as a string"
+      },
+      "regular_price": {
+        "type": "string",
+        "description": "Regular (non-sale) price"
+      },
+      "sale_price": {
+        "type": "string",
+        "description": "Sale price, empty string if not on sale"
+      },
+      "on_sale": {
+        "type": "boolean",
+        "description": "Whether the product is currently on sale"
+      },
+      "manage_stock": {
+        "type": "boolean",
+        "description": "Whether stock management is enabled"
+      },
+      "stock_quantity": {
+        "type": ["integer", "null"],
+        "description": "Current stock quantity",
+        "minimum": 0
+      },
+      "stock_status": {
+        "type": "string",
+        "description": "Stock availability status",
+        "enum": ["instock", "outofstock", "onbackorder"]
+      },
+      "total_sales": {
+        "type": "integer",
+        "description": "Total number of sales for this product",
+        "minimum": 0
+      },
+      "categories": {
+        "type": "array",
+        "description": "Product categories",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer", "description": "Category ID" },
+            "name": { "type": "string", "description": "Category display name" },
+            "slug": { "type": "string", "description": "Category slug" }
+          },
+          "required": ["id", "name", "slug"]
+        }
+      },
+      "images": {
+        "type": "array",
+        "description": "Product images",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer", "description": "Image attachment ID" },
+            "src": { "type": "string", "description": "Image URL", "format": "uri" },
+            "name": { "type": "string", "description": "Image filename" },
+            "alt": { "type": "string", "description": "Image alt text" }
+          },
+          "required": ["id", "src"]
+        }
+      },
+      "date_created": {
+        "type": "object",
+        "description": "Firestore Timestamp of product creation in WooCommerce",
+        "properties": {
+          "_seconds": { "type": "integer" },
+          "_nanoseconds": { "type": "integer" }
+        },
+        "required": ["_seconds", "_nanoseconds"]
+      },
+      "date_modified": {
+        "type": "object",
+        "description": "Firestore Timestamp of last product modification in WooCommerce",
+        "properties": {
+          "_seconds": { "type": "integer" },
+          "_nanoseconds": { "type": "integer" }
+        },
+        "required": ["_seconds", "_nanoseconds"]
+      },
+      "_contentHash": {
+        "type": "string",
+        "description": "MD5 hash of the product content, used to detect changes during sync",
+        "pattern": "^[a-f0-9]{32}$"
+      }
+    },
+    "required": ["id", "name", "slug", "type", "status", "price", "date_created", "date_modified", "_contentHash"],
+    "additionalProperties": false
+  }
+}

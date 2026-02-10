@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/juanisidoro/firestore-schema-viewer/main/schema/collection.schema.json",
+  "collection": "users",
+  "description": "Application users with authentication and profile information.",
+  "documentCount": 250,
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "firestore://users",
+    "title": "User",
+    "description": "A registered user of the platform.",
+    "type": "object",
+    "properties": {
+      "email": {
+        "type": "string",
+        "description": "User email address",
+        "format": "email"
+      },
+      "displayName": {
+        "type": "string",
+        "description": "User display name"
+      },
+      "photoURL": {
+        "type": ["string", "null"],
+        "description": "Profile photo URL",
+        "format": "uri"
+      },
+      "role": {
+        "type": "string",
+        "description": "User role in the platform",
+        "enum": ["admin", "editor", "viewer"]
+      },
+      "createdAt": {
+        "type": "string",
+        "description": "Account creation timestamp",
+        "format": "date-time"
+      },
+      "lastLoginAt": {
+        "type": "string",
+        "description": "Last login timestamp",
+        "format": "date-time"
+      }
+    },
+    "required": ["email", "displayName", "role", "createdAt"],
+    "additionalProperties": false
+  }
+}

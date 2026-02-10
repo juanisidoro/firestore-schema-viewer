@@ -1,0 +1,107 @@
+{
+  "$schema": "https://raw.githubusercontent.com/juanisidoro/firestore-schema-viewer/main/schema/collection.schema.json",
+  "collection": "variations",
+  "description": "Product variations for variable products. Each variation represents a specific combination of attributes (e.g. color + size) with its own price and stock.",
+  "documentCount": 892,
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "firestore://frontend_shops/products/variations",
+    "title": "ProductVariation",
+    "description": "A specific product variation with its own SKU, price, stock, and attribute combination.",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "WooCommerce variation ID"
+      },
+      "sku": {
+        "type": "string",
+        "description": "Variation-specific SKU"
+      },
+      "status": {
+        "type": "string",
+        "description": "Publication status",
+        "enum": ["publish", "draft", "pending", "private"]
+      },
+      "attributes": {
+        "type": "array",
+        "description": "Attribute values that define this variation",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer", "description": "Attribute taxonomy ID" },
+            "name": { "type": "string", "description": "Attribute name (e.g. 'color', 'size')" },
+            "option": { "type": "string", "description": "Selected option value (e.g. 'Amarillo', 'Mediano')" }
+          },
+          "required": ["id", "name", "option"]
+        }
+      },
+      "price": {
+        "type": "string",
+        "description": "Current active price"
+      },
+      "regular_price": {
+        "type": "string",
+        "description": "Regular price"
+      },
+      "sale_price": {
+        "type": "string",
+        "description": "Sale price, empty string if not on sale"
+      },
+      "on_sale": {
+        "type": "boolean",
+        "description": "Whether this variation is on sale"
+      },
+      "manage_stock": {
+        "type": "boolean",
+        "description": "Whether stock is managed at variation level"
+      },
+      "stock_quantity": {
+        "type": ["integer", "null"],
+        "description": "Available stock for this variation",
+        "minimum": 0
+      },
+      "stock_status": {
+        "type": "string",
+        "description": "Stock availability status",
+        "enum": ["instock", "outofstock", "onbackorder"]
+      },
+      "image": {
+        "type": "object",
+        "description": "Variation-specific image",
+        "properties": {
+          "id": { "type": "integer", "description": "Image attachment ID" },
+          "src": { "type": "string", "description": "Image URL", "format": "uri" },
+          "name": { "type": "string", "description": "Image filename" },
+          "alt": { "type": "string", "description": "Image alt text" }
+        },
+        "required": ["id", "src"]
+      },
+      "date_created": {
+        "type": "object",
+        "description": "Firestore Timestamp",
+        "properties": {
+          "_seconds": { "type": "integer" },
+          "_nanoseconds": { "type": "integer" }
+        },
+        "required": ["_seconds", "_nanoseconds"]
+      },
+      "date_modified": {
+        "type": "object",
+        "description": "Firestore Timestamp",
+        "properties": {
+          "_seconds": { "type": "integer" },
+          "_nanoseconds": { "type": "integer" }
+        },
+        "required": ["_seconds", "_nanoseconds"]
+      },
+      "_contentHash": {
+        "type": "string",
+        "description": "MD5 hash used to detect changes during sync",
+        "pattern": "^[a-f0-9]{32}$"
+      }
+    },
+    "required": ["id", "status", "attributes", "price", "date_created", "date_modified", "_contentHash"],
+    "additionalProperties": false
+  }
+}
